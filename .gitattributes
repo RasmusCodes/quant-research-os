@@ -1,0 +1,6 @@
+# Normalise line endings so content hashes of text fixtures are identical on every checkout.
+* text=auto eol=lf
+*.png binary
+*.db binary
+*.parquet binary
+*.gz binary

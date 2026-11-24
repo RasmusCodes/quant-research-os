@@ -1,0 +1,13 @@
+[package]
+name = "qros-manifest"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Write quant-research-os run manifests from Rust projects. No dependencies."
+repository = "https://github.com/RasmusCodes/quant-research-os"
+readme = "README.md"
+
+[dependencies]
+
+[[example]]
+name = "emit_run"

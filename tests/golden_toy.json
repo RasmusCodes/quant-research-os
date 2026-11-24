@@ -1,0 +1,42 @@
+[
+ {
+  "seed": 7,
+  "lookback": 10,
+  "cost_bps": 5.0,
+  "n": 1260,
+  "data_sha256": "61d5149131fffa8bfdbbd26389b40e7d825d1726dcb8ac3a38ad1f4d07ebcc48",
+  "returns_sha256": "5e58c34fa12b8b82f98e54c1cc135f8b96b8c56ff7e669c5c193c03aa19b3269",
+  "sharpe": 0.7041086673391885,
+  "final_equity": 1.6403262999568498
+ },
+ {
+  "seed": 7,
+  "lookback": 20,
+  "cost_bps": 5.0,
+  "n": 1260,
+  "data_sha256": "61d5149131fffa8bfdbbd26389b40e7d825d1726dcb8ac3a38ad1f4d07ebcc48",
+  "returns_sha256": "3f62ca7d9a98cc8d164068e56fab975bc7170fe3fea1cf7c7ff845cb8278b634",
+  "sharpe": 0.7993794651702263,
+  "final_equity": 1.7675390654417216
+ },
+ {
+  "seed": 7,
+  "lookback": 60,
+  "cost_bps": 5.0,
+  "n": 1260,
+  "data_sha256": "61d5149131fffa8bfdbbd26389b40e7d825d1726dcb8ac3a38ad1f4d07ebcc48",
+  "returns_sha256": "15bac2433788444b4fd1ff45b6f7a6578e8ec8ab731fe34a48ba9a169906d032",
+  "sharpe": -0.7621971406571912,
+  "final_equity": 0.5216591630924493
+ },
+ {
+  "seed": 123,
+  "lookback": 5,
+  "cost_bps": 2.0,
+  "n": 300,
+  "data_sha256": "b99c7a090f46af720452493f226a232ca4469fe7f1568239f049a673b6e7f3a5",
+  "returns_sha256": "1342113ab70c4d3cf593436892533c386f52748bd39a3e992a8d0a65dea91191",
+  "sharpe": 0.5169582661819706,
+  "final_equity": 1.083868095584804
+ }
+]

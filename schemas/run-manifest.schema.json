@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/RasmusCodes/quant-research-os/schemas/run-manifest.schema.json",
+  "title": "qros run manifest",
+  "description": "How any repository (any language) reports one experiment run to quant-research-os. Paths are relative to the manifest's folder. `qros ingest` verifies every declared sha256.",
+  "type": "object",
+  "required": ["schema", "experiment", "results"],
+  "properties": {
+    "schema": {"const": "qros.run-manifest/1"},
+    "project": {"type": "string", "description": "The repository or project that produced the run."},
+    "experiment": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {"type": "string"},
+        "family": {"type": "string", "description": "Trial family for multiple-testing accounting (all configurations tried for one idea)."},
+        "model": {"type": "string"},
+        "model_version": {"type": "string"},
+        "parent": {"type": "string", "description": "Experiment id this run derives from (model lineage)."},
+        "tags": {"type": "array", "items": {"type": "string"}},
+        "notes": {"type": "string"},
+        "hypothesis": {
+          "description": "Either a reference to a registered hypothesis or a new one to import.",
+          "oneOf": [
+            {"type": "null"},
+            {"type": "object", "required": ["id"], "properties": {"id": {"type": "string"}}},
+            {"type": "object", "required": ["statement"], "properties": {
+              "title": {"type": "string"}, "statement": {"type": "string"}, "rationale": {"type": "string"},
+              "prediction": {"type": "object"}, "criteria": {"type": "array"},
+              "registered_at_claimed": {"type": "string", "description": "Recorded as a note; qros uses its own registration time."},
+              "register": {"type": "boolean"}}}
+          ]
+        }
+      }
+    },
+    "code": {
+      "type": "object",
+      "properties": {
+        "repo": {"type": "string"},
+        "language": {"type": "string"},
+        "commit": {"type": ["string", "null"]},
+        "dirty": {"type": "boolean"},
+        "source_sha256": {"type": "string"},
+        "entry_point": {"type": "string"},
+        "command": {"oneOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}],
+                    "description": "Command that re-runs the experiment (used by qros reproduce --cwd)."},
+        "cwd": {"type": "string"}
+      }
+    },
+    "params": {"type": "object"},
+    "seed": {"type": ["integer", "null"]},
+    "periods": {
+      "type": "object",
+      "properties": {
+        "train": {"type": ["array", "null"], "items": {"type": "string"}, "minItems": 2, "maxItems": 2},
+        "test": {"type": ["array", "null"], "items": {"type": "string"}, "minItems": 2, "maxItems": 2}
+      }
+    },
+    "periods_per_year": {"type": ["number", "null"]},
+    "holdout": {
+      "type": "object",
+      "required": ["name", "start", "end"],
+      "properties": {
+        "name": {"type": "string"}, "start": {"type": "string"}, "end": {"type": "string"},
+        "opened": {"type": "boolean"}, "purpose": {"type": "string"}, "max_touches": {"type": "integer"},
+        "description": {"type": "string"}
+      }
+    },
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["dataset"],
+        "anyOf": [{"required": ["path"]}, {"required": ["sha256"]}],
+        "properties": {
+          "role": {"type": "string"}, "dataset": {"type": "string"}, "path": {"type": "string"},
+          "sha256": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"}, "label": {"type": "string"},
+          "knowledge_time": {"type": "string"}, "source": {"type": "string"}, "license": {"type": "string"},
+          "url": {"type": "string"}, "licensed": {"type": "boolean"}, "survivorship_free": {"type": ["boolean", "null"]},
+          "adjusted": {"type": ["boolean", "null"]}, "kind": {"type": "string"}, "store": {"type": "boolean"},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "results": {
+      "type": "object",
+      "anyOf": [{"required": ["returns"]}, {"required": ["metrics"]}],
+      "properties": {
+        "returns": {
+          "type": "object",
+          "properties": {
+            "path": {"type": "string"},
+            "sha256": {"type": "string"},
+            "date_column": {"type": "string", "default": "date"},
+            "columns": {"type": "object", "description": "Map of net/gross/cost/turnover/benchmark to the file's column names. Default: columns with those names."},
+            "kind": {"enum": ["returns", "pnl"]},
+            "capital": {"type": "number"},
+            "periods_per_year": {"type": "number"}
+          }
+        },
+        "metrics": {"type": "object", "additionalProperties": {"type": "number"}},
+        "digest": {
+          "type": "object",
+          "required": ["value"],
+          "properties": {"value": {"type": "string"}, "from": {"enum": ["stdout-json", "stdout"]}, "json_path": {"type": "string"}}
+        },
+        "meta": {"type": "object"}
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {"type": "object", "required": ["path"], "properties": {
+        "name": {"type": "string"}, "path": {"type": "string"}, "sha256": {"type": "string"}, "kind": {"type": "string"}}}
+    },
+    "environment": {"type": "object"},
+    "started_at": {"type": "string"},
+    "finished_at": {"type": "string"}
+  }
+}
