@@ -32,6 +32,7 @@ from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
+from qros.artifacts import read_csv_exact
 from qros.backtest.interface import BacktestResult
 from qros.registry.models import Periods
 from qros.util.hashing import canonical_json, sha256_bytes, sha256_file, sha256_text
@@ -105,7 +106,7 @@ def read_returns(spec: dict[str, Any], base: Path, frames: dict[str, pd.DataFram
     else:
         path = (base / spec["path"]).resolve()
         file_hash = _check_hash(path, spec.get("sha256") if verify else None, "results.returns")
-        frame = pd.read_csv(path) if path.suffix.lower() != ".parquet" else pd.read_parquet(path)
+        frame = read_csv_exact(path) if path.suffix.lower() != ".parquet" else pd.read_parquet(path)
     date_col = spec.get("date_column", "date")
     if date_col in frame.columns:
         frame[date_col] = pd.to_datetime(frame[date_col])

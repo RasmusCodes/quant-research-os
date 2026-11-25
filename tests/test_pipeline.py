@@ -165,6 +165,14 @@ def test_lookahead_in_managed_run_is_invalid(reg):
     assert "PIT_VIOLATION" not in _codes(reg, ok.id)
 
 
+def test_lookahead_detected_with_csv_storage(reg, monkeypatch):
+    """The same audit must work when frames are stored as qcsv (no pyarrow installed)."""
+    import qros.artifacts
+    monkeypatch.setattr(qros.artifacts, "_has_pyarrow", lambda: False)
+    test_lookahead_in_managed_run_is_invalid(reg)
+    assert all(v.storage == "qcsv" for v in reg.list_versions())
+
+
 def test_metrics_only_experiment(reg):
     exp = reg.create_experiment("sim run", family="sim", source="ingested")
     done = reg.complete_experiment(exp.id, None, metrics={"pnl": 12.5})

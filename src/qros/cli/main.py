@@ -149,7 +149,8 @@ def cmd_data(args: argparse.Namespace) -> int:
             if path.suffix.lower() == ".parquet":
                 data = pd.read_parquet(path)
             else:
-                data = pd.read_csv(path, parse_dates=args.parse_dates or None)
+                from qros.artifacts import read_csv_exact
+                data = read_csv_exact(path, parse_dates=args.parse_dates or None)
                 if args.index_col:
                     data = data.set_index(args.index_col)
         v = reg.snapshot(args.dataset, data, label=args.label, knowledge_time=args.knowledge_time, notes=args.notes)

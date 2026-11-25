@@ -138,6 +138,17 @@ def frame_to_qcsv(df: pd.DataFrame) -> bytes:
     return buf.getvalue()
 
 
+def read_csv_exact(source: Any, **kwargs: Any) -> pd.DataFrame:
+    """``pd.read_csv`` that parses floats exactly (round-trip) on every pandas version.
+
+    pandas >= 3 does this by default and deprecates the option; pandas 2 needs it, or the last bit of
+    some values changes and result hashes stop matching.
+    """
+    if int(pd.__version__.split(".")[0]) < 3:
+        kwargs.setdefault("float_precision", "round_trip")
+    return pd.read_csv(source, **kwargs)
+
+
 def frame_from_qcsv(data: bytes) -> pd.DataFrame:
     text = gzip.decompress(data).decode("utf-8")
     first, rest = text.split("\n", 1)
@@ -146,10 +157,8 @@ def frame_from_qcsv(data: bytes) -> pd.DataFrame:
     schema = json.loads(first[len(QCSV_MAGIC):])
     index_spec = schema.get("index")
     dtypes = {name: (str if kind in ("string", "datetime", "bool") else None) for name, kind in schema["columns"]}
-    # pandas >= 3 parses floats round-trip by default and deprecates the option; older pandas needs it.
-    precision = {} if int(pd.__version__.split(".")[0]) >= 3 else {"float_precision": "round_trip"}
-    df = pd.read_csv(io.StringIO(rest), keep_default_na=True, index_col=0 if index_spec else None,
-                     dtype={k: v for k, v in dtypes.items() if v is not None}, **precision)
+    df = read_csv_exact(io.StringIO(rest), keep_default_na=True, index_col=0 if index_spec else None,
+                        dtype={k: v for k, v in dtypes.items() if v is not None})
     for name, kind in schema["columns"]:
         df[name] = _restore(df[name], kind)
     if index_spec:

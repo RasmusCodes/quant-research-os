@@ -97,6 +97,10 @@ class PointInTime:
             if key != self.available else self.frame[[self.entity, self.available, value]].assign(
                 _key=self.frame[self.available])
         right = right.dropna(subset=["_key"]).sort_values("_key", kind="mergesort")
+        # One key type on both sides: pandas 3 builds new string columns as "str" while tables restored
+        # from CSV storage hold Python objects, and merge_asof refuses mixed key types.
+        left[self.entity] = left[self.entity].astype(object)
+        right = right.assign(**{self.entity: right[self.entity].astype(object)})
         merged = pd.merge_asof(left, right, left_on="_decision", right_on="_key", by=self.entity,
                                direction="backward")
         self._record(merged["_decision"], merged[self.available], merged[self.entity], key)
